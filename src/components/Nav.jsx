@@ -158,6 +158,7 @@ export default function Nav({ focused = false }) {
           {hasPhone() && (
             <a className="hdr__call" href={BUSINESS.phoneHref} aria-label={`Call ${BUSINESS.phoneDisplay}`}>
               <PhoneIcon size={18} />
+              <span className="hdr__num">{BUSINESS.phoneDisplay}</span>
             </a>
           )}
           <Link to="/book" className="btn btn--sun hdr__book">Book Online</Link>

@@ -106,7 +106,7 @@ Structured data only includes facts shown on the site — no ratings, hours, pri
 
 ## TODO before launch
 
-- [ ] Real phone number → `BUSINESS.phone`, `phoneDisplay`, `phoneHref` (the one provided had 9 digits, so no phone is shown).
+- [x] Phone number — (657) 312-4989.
 - [ ] Business email → `BUSINESS.email` (turns on the contact + quote forms).
 - [ ] Legal entity name → `BUSINESS.legalName`; review the legal pages with an attorney.
 - [ ] Cancellation, deposit-refund and payment terms → `POLICIES` (Terms page shows a neutral fallback until then).
@@ -116,5 +116,6 @@ Structured data only includes facts shown on the site — no ratings, hours, pri
 - [ ] Replace illustrated gallery scenes with real night install photos.
 - [ ] Add real reviews / Google review link when they exist (never invent them).
 - [ ] Custom domain → `BUSINESS.siteUrl` (canonical, OG, sitemap and schema all follow it).
-- [ ] Google Search Console → `BUSINESS.googleSiteVerification`, then submit `/sitemap.xml`.
+- [x] Google Search Console verification tag added — deploy, verify, then submit `/sitemap.xml`.
+- [x] Business hours — every day, 6 AM – 7 PM.
 - [ ] Set `VITE_STRIPE_PUBLISHABLE_KEY` and `VITE_API_BASE` (repo secrets or `.env.local`) — booking needs the Worker.

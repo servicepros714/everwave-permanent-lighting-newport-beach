@@ -45,6 +45,10 @@ function business() {
   if (BUSINESS.phone) node.telephone = BUSINESS.phone;
   if (BUSINESS.email) node.email = BUSINESS.email;
   if (BUSINESS.social.length) node.sameAs = BUSINESS.social;
+  const hours = BUSINESS.hours.filter((h) => h.dayOfWeek && h.opens && h.closes);
+  if (hours.length) {
+    node.openingHoursSpecification = hours.map((h) => ({ '@type': 'OpeningHoursSpecification', dayOfWeek: h.dayOfWeek, opens: h.opens, closes: h.closes }));
+  }
   return node;
 }
 

@@ -34,7 +34,8 @@ export default function Footer() {
               : <Link className="ftr__phone ftr__phone--text" to="/contact">Get in touch</Link>}
             {hasEmail() && <a className="ftr__email" href={`mailto:${BUSINESS.email}`}><MailIcon size={18} />{BUSINESS.email}</a>}
             <p className="ftr__where">{BUSINESS.name} · {BUSINESS.city}, {BUSINESS.region}</p>
-            <p className="ftr__where">Install season Oct 20 – Dec 20{BUSINESS.hours.length > 0 && <> · {BUSINESS.hours.map((h) => `${h.days} ${h.hours}`).join(' · ')}</>}</p>
+            {BUSINESS.hours.length > 0 && <p className="ftr__where">Hours: {BUSINESS.hours.map((h) => `${h.days}, ${h.hours}`).join(' · ')}</p>}
+            <p className="ftr__where">Install season Oct 20 – Dec 20</p>
             <div className="ftr__btns">
               <Link to="/book" className="btn btn--sun">Book Online</Link>
               <Link to="/quote" className="btn btn--ghost-light">{quoteLabel()}</Link>

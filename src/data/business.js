@@ -26,11 +26,10 @@ export const BUSINESS = {
   description:
     'Permanent LED roofline lighting and professional Christmas light installation for homes in Newport Beach and nearby Orange County cities.',
 
-  // PLACEHOLDER — the number provided (555-555-555) had only 9 digits, so no phone is shown.
-  // Fill in all three, e.g. phone: '+19495550123', phoneDisplay: '(949) 555-0123', phoneHref: 'tel:+19495550123'.
-  phone: '',
-  phoneDisplay: '',
-  phoneHref: '',
+  // Business phone (confirmed by the owner). Keep all three in sync.
+  phone: '+16573124989',
+  phoneDisplay: '(657) 312-4989',
+  phoneHref: 'tel:+16573124989',
 
   // PLACEHOLDER — business email. Turns on the contact + quote request forms (they open the visitor's email app).
   email: '',
@@ -39,9 +38,18 @@ export const BUSINESS = {
   // Shape: { street: '', city: 'Newport Beach', region: 'CA', postalCode: '' }
   address: null,
 
-  // PLACEHOLDER — business hours, only once confirmed. Shape: [{ days: 'Mon–Fri', hours: '8 AM – 5 PM' }]
-  // (Install windows during the season are already shown separately.)
-  hours: [],
+  // Business hours (confirmed by the owner). `days`/`hours` are shown on the site;
+  // `dayOfWeek`/`opens`/`closes` feed the structured data (24h time).
+  // (Install windows during the season are shown separately.)
+  hours: [
+    {
+      days: 'Every day',
+      hours: '6 AM – 7 PM',
+      dayOfWeek: ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'],
+      opens: '06:00',
+      closes: '19:00',
+    },
+  ],
 
   // PLACEHOLDER — real social profile URLs only, e.g. ['https://www.instagram.com/…'].
   social: [],
@@ -49,8 +57,8 @@ export const BUSINESS = {
   // PLACEHOLDER — Google Business Profile review link once the profile is live.
   googleReviewUrl: '',
 
-  // PLACEHOLDER — Google Search Console "HTML tag" verification code (just the content="…" value).
-  googleSiteVerification: '',
+  // Google Search Console "HTML tag" verification code (just the content="…" value). Added to every page's <head>.
+  googleSiteVerification: 'UyFF0uw5Bo8808AXmDgKYCAPT7Bpo7-Qyzp_xwk39Lw',
 
   // OWNER TO CONFIRM — set to true only if quotes / design visits are always free of charge.
   // While false, the site says "Get a Quote" instead of "Get a Free Quote".

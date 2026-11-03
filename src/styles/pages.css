@@ -235,3 +235,11 @@ ol.cardgrid { list-style: none; }
 .ftr__legalnav a { color: #C9DAF0; }
 .ftr__legalnav a:hover { color: #fff; text-decoration: underline; text-underline-offset: 4px; }
 .nf__btns { display: flex; flex-wrap: wrap; justify-content: center; gap: 10px; }
+
+/* Header phone: number shown beside Book Online; icon-only where space is tight. */
+.hdr__call { width: auto; padding: 0 16px 0 13px; display: inline-flex; align-items: center; gap: 8px; border-radius: 999px; font: 700 14.5px var(--f-display); white-space: nowrap; }
+@media (min-width: 1081px) and (max-width: 1260px), (max-width: 720px) {
+  .hdr__call { width: 46px; padding: 0; justify-content: center; }
+  .hdr__num { display: none; }
+}
+@media (max-width: 720px) { .hdr__call { width: 42px; } }
