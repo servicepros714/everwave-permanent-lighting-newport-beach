@@ -1,8 +1,10 @@
 /* How it works — four steps with tide-fill badges that fill up as they enter the viewport. */
+import { Link } from 'react-router-dom';
 import { STEPS } from '../data/business.js';
+import { ArrowRight } from '../components/Icons.jsx';
 import { riseDelay } from '../lib/useReveal.js';
 
-export default function HowItWorks() {
+export default function HowItWorks({ more = false }) {
   return (
     <section id="how" className="section how">
       <div className="container">
@@ -22,6 +24,7 @@ export default function HowItWorks() {
             </li>
           ))}
         </ol>
+        {more && <p className="how__more" data-rise><Link to="/process" className="btn btn--ghost-dark">See our full process <ArrowRight size={18} /></Link></p>}
       </div>
     </section>
   );

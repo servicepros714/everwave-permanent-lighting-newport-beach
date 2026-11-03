@@ -44,7 +44,7 @@ export default function Season() {
             <SunMark size={30} className="season__sun" />
             <div>
               <span className="season__label">{status === 'live' ? 'Next open install' : 'Earliest install date'}</span>
-              <span className="season__date">{!ready ? 'Checking…' : next ? `${fmtDate(next.date, true)} · ${next.window.part}` : 'Season full — call us'}</span>
+              <span className="season__date">{!ready ? 'Checking…' : next ? `${fmtDate(next.date, true)} · ${next.window.part}` : 'Season full — contact us'}</span>
             </div>
           </div>
           <Link to="/book" className="btn btn--navy">Pick your date <ArrowRight size={18} /></Link>

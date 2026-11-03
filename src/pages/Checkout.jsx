@@ -4,7 +4,8 @@ import { useEffect, useMemo, useRef, useState } from 'react';
 import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 import { loadStripe } from '@stripe/stripe-js';
 import { Elements, ExpressCheckoutElement, PaymentElement, useElements, useStripe } from '@stripe/react-stripe-js';
-import { BUSINESS, DEPOSIT, PACKAGES, ADDONS, TIME_WINDOWS } from '../data/business.js';
+import { BUSINESS, DEPOSIT, PACKAGES, ADDONS, TIME_WINDOWS, contactPhrase, hasPhone } from '../data/business.js';
+import { usePageMeta } from '../lib/seo.js';
 import { draftComplete, useDraft } from '../lib/draft.jsx';
 import { createPaymentIntent } from '../lib/api.js';
 import { estimate } from '../lib/pricing.js';
@@ -111,7 +112,7 @@ export default function Checkout() {
 
   const redirectSecret = params.get('payment_intent_client_secret');
 
-  useEffect(() => { document.title = 'Checkout · Everwave Permanent Lighting'; }, []);
+  usePageMeta('/checkout');
 
   const done = (snap) => {
     nav('/confirmation', { replace: true, state: { id: snap.id } });
@@ -127,7 +128,7 @@ export default function Checkout() {
       setBusy(false); setFinalizing(false);
       if (e.code === 'SLOT_UNAVAILABLE' || e.status === 409) { setSlotTaken(true); setError(e.message); return; }
       setError(piId
-        ? `Your deposit went through, but we couldn’t save the booking (${e.message}). Please call ${BUSINESS.phoneDisplay} — reference ${draft.ref}.`
+        ? `Your deposit went through, but we couldn’t save the booking (${e.message}). Please ${contactPhrase()} and quote reference ${draft.ref}.`
         : e.message);
     }
   };
@@ -140,7 +141,7 @@ export default function Checkout() {
     stripePromise.then((stripe) => stripe.retrievePaymentIntent(redirectSecret)).then(({ paymentIntent }) => {
       if (paymentIntent && ['succeeded', 'processing'].includes(paymentIntent.status) && draftComplete(draft)) finish('Paid', paymentIntent.id);
       else { setFinalizing(false); setError('Your payment was not completed. Please try again or pay at the visit.'); nav('/checkout', { replace: true }); }
-    }).catch(() => { setFinalizing(false); setError('We could not confirm your payment. Please call us.'); });
+    }).catch(() => { setFinalizing(false); setError(`We could not confirm your payment. Please ${contactPhrase()} and quote reference ${draft.ref}.`); });
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [redirectSecret]);
 
@@ -227,7 +228,12 @@ export default function Checkout() {
         <p className="checkout__later">
           <button type="button" className="textlink" onClick={() => finish('Pay Later')} disabled={busy}>I’ll pay at the visit</button>
         </p>
-        <p className="checkout__help"><PhoneIcon size={15} /> Need help? <a href={BUSINESS.phoneHref}>{BUSINESS.phoneDisplay}</a></p>
+        <p className="checkout__help">
+          {hasPhone()
+            ? <><PhoneIcon size={15} /> Need help? <a href={BUSINESS.phoneHref}>{BUSINESS.phoneDisplay}</a></>
+            : <>Need help? <Link to="/contact">Contact us</Link></>}
+          {' · '}<Link to="/terms">Terms</Link> · <Link to="/privacy">Privacy</Link>
+        </p>
       </div>
     </main>
   );

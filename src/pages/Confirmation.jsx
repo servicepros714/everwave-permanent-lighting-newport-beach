@@ -1,6 +1,7 @@
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { BUSINESS, DEPOSIT, PACKAGES } from '../data/business.js';
+import { BUSINESS, DEPOSIT, PACKAGES, hasPhone } from '../data/business.js';
+import { usePageMeta } from '../lib/seo.js';
 import { CONFIRM_KEY } from '../lib/draft.jsx';
 import { fmtDate } from '../lib/time.js';
 import { CheckIcon, PhoneIcon } from '../components/Icons.jsx';
@@ -10,14 +11,14 @@ export default function Confirmation() {
   const [snap] = useState(() => {
     try { return JSON.parse(sessionStorage.getItem(CONFIRM_KEY) || 'null'); } catch { return null; }
   });
-  useEffect(() => { document.title = 'You’re booked · Everwave Permanent Lighting'; }, []);
+  usePageMeta('/confirmation');
 
   if (!snap) {
     return (
       <main id="main" className="conf">
         <div className="container"><div className="conf__card">
           <h1 className="h2">No recent booking found</h1>
-          <p>If you just booked, check your email or call us at <a href={BUSINESS.phoneHref}>{BUSINESS.phoneDisplay}</a>.</p>
+          <p>If you just booked, check your email or {hasPhone() ? <>call us at <a href={BUSINESS.phoneHref}>{BUSINESS.phoneDisplay}</a></> : <Link to="/contact">contact us</Link>}.</p>
           <Link to="/book" className="btn btn--sun">Book an install</Link>
         </div></div>
       </main>
@@ -50,7 +51,7 @@ export default function Confirmation() {
           <li>Our crew installs, tests and sets up your timer or controller.</li>
         </ol>
         <div className="conf__btns">
-          <a href={BUSINESS.phoneHref} className="btn btn--ghost-dark"><PhoneIcon size={18} /> {BUSINESS.phoneDisplay}</a>
+          {hasPhone() && <a href={BUSINESS.phoneHref} className="btn btn--ghost-dark"><PhoneIcon size={18} /> {BUSINESS.phoneDisplay}</a>}
           <Link to="/" className="btn btn--sun">Back to home</Link>
         </div>
       </div></div>

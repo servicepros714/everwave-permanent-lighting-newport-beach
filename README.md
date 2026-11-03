@@ -52,7 +52,7 @@ Repo → Settings → Secrets and variables → Actions:
 - `CLOUDFLARE_ACCOUNT_ID`
 - Optional: `VITE_STRIPE_PUBLISHABLE_KEY`, `VITE_API_BASE` (override `.env.local` when set)
 
-Every push to `main` builds and deploys. `public/_redirects` keeps client routes (`/book`, `/checkout`, `/confirmation`) working.
+Every push to `main` builds and deploys. The build writes one HTML file per route (`about.html`, `services/permanent-lighting.html`, …) so Cloudflare Pages serves clean URLs with the right `<head>`; any other path falls back to the app (Pages' SPA mode — keep the project free of a top-level `404.html`).
 
 ## Data (shared D1 columns)
 
@@ -66,12 +66,55 @@ Every push to `main` builds and deploys. `public/_redirects` keeps client routes
 
 Worker behavior: availability is source-scoped and reschedule-aware; Cancelled frees a slot; Pay Later inserts are atomic; paid bookings are verified with Stripe first, and a paid booking that loses a slot race is still saved and flagged `SLOT CONFLICT`; PaymentIntents are idempotent per draft ref; Pacific time is DST-aware.
 
+## Netlify (live site)
+
+Live at **https://everwave-permanent-lighting-newport-beach.netlify.app** (`BUSINESS.siteUrl`). `netlify.toml` sets the
+build (`npm run build` → `dist`, Node 20) and the app fallback. Manual deploy from this folder:
+
+```cmd
+netlify deploy --build --prod
+```
+
+For automatic deploys on push, link the GitHub repo in Netlify → Site configuration → Build & deploy.
+Set `VITE_STRIPE_PUBLISHABLE_KEY` / `VITE_API_BASE` under Netlify → Environment variables, and add the Netlify
+origin to the Worker's `ALLOWED_ORIGINS` (if set) so booking works.
+
+## Pages
+
+| Route | Page |
+|---|---|
+| `/` | Home |
+| `/services`, `/services/permanent-lighting`, `/services/christmas-lights` | Services overview + one page per service |
+| `/process`, `/gallery`, `/about`, `/faq` | Our process, gallery (illustrated previews), about, FAQ |
+| `/quote`, `/contact` | Quote + contact (email form appears once `BUSINESS.email` is set) |
+| `/book`, `/checkout`, `/confirmation` | Booking flow (checkout + confirmation are `noindex`) |
+| `/privacy`, `/terms`, `/cookies`, `/accessibility` | Legal pages (linked from the footer) |
+
+## Business details — one file
+
+Everything about the business lives in **`src/data/business.js`**: name, phone, email, hours, address, social links,
+Google review link, Search Console code, About-page story, credentials and the policies used by the Terms page.
+Empty values are hidden everywhere — nothing fake is shown. `npm run build` prints the list of details still missing.
+
+## SEO (generated at build time)
+
+`scripts/seo.js` (a Vite plugin) reads `src/data/routes.js` + `business.js` and writes, for every route:
+title, meta description, canonical, Open Graph/Twitter tags, JSON-LD (`HomeAndConstructionBusiness`, `WebSite`,
+`WebPage`, `BreadcrumbList`, plus `Service` on service pages and `FAQPage` on `/faq`) and a `<noscript>` fallback.
+It also writes `dist/sitemap.xml` and `dist/robots.txt`. Change a page's title/description in `src/data/routes.js`.
+Structured data only includes facts shown on the site — no ratings, hours, price range or coordinates unless you add them.
+
 ## TODO before launch
 
-- [ ] Real phone number (`src/data/business.js` and `telephone` in `index.html` JSON-LD) — the one provided had 9 digits.
+- [ ] Real phone number → `BUSINESS.phone`, `phoneDisplay`, `phoneHref` (the one provided had 9 digits, so no phone is shown).
+- [ ] Business email → `BUSINESS.email` (turns on the contact + quote forms).
+- [ ] Legal entity name → `BUSINESS.legalName`; review the legal pages with an attorney.
+- [ ] Cancellation, deposit-refund and payment terms → `POLICIES` (Terms page shows a neutral fallback until then).
 - [ ] Package and add-on prices (`null` shows "Online quoting").
-- [ ] Confirm the service-area city list.
-- [ ] Confirm takedown timing in the FAQ.
+- [ ] Confirm the service-area city list and takedown timing in the FAQ.
+- [ ] Confirm existing marketing claims ("commercial-grade" lights, "we're new to Newport Beach").
 - [ ] Replace illustrated gallery scenes with real night install photos.
 - [ ] Add real reviews / Google review link when they exist (never invent them).
-- [ ] Update canonical / OG URLs when a custom domain is connected.
+- [ ] Custom domain → `BUSINESS.siteUrl` (canonical, OG, sitemap and schema all follow it).
+- [ ] Google Search Console → `BUSINESS.googleSiteVerification`, then submit `/sitemap.xml`.
+- [ ] Set `VITE_STRIPE_PUBLISHABLE_KEY` and `VITE_API_BASE` (repo secrets or `.env.local`) — booking needs the Worker.

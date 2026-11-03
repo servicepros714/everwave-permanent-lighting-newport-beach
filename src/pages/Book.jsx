@@ -2,7 +2,8 @@
    Sunrise-arc progress, clickable selection-chip ribbon, sticky Back/Continue bar on phones. */
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { Link, useNavigate, useSearchParams } from 'react-router-dom';
-import { LIGHTING_TYPES, PACKAGES, STORY_OPTIONS, TIME_WINDOWS, BUSINESS, LEAD_HOURS } from '../data/business.js';
+import { LIGHTING_TYPES, PACKAGES, STORY_OPTIONS, TIME_WINDOWS, BUSINESS, LEAD_HOURS, hasPhone } from '../data/business.js';
+import { usePageMeta } from '../lib/seo.js';
 import { useDraft } from '../lib/draft.jsx';
 import { useAvailability } from '../lib/useAvailability.js';
 import { estimate, priceLabel, addonLabel, visibleAddons } from '../lib/pricing.js';
@@ -144,16 +145,22 @@ export default function Book() {
   const [params, setParams] = useSearchParams();
   const { draft, update } = useDraft();
   const [error, setError] = useState(params.get('taken') ? 'That install window was just taken. Please choose another date or time.' : '');
-  const [refresh, setRefresh] = useState(params.get('taken') ? 1 : 0);
+  const [refresh] = useState(params.get('taken') ? 1 : 0);
   const { booked, status } = useAvailability(refresh);
   const step = Math.min(Math.max(draft.step || 0, 0), STEPS.length - 1);
   const firstRef = useRef(null);
   const fieldRefs = { name: useRef(null), phone: useRef(null), email: useRef(null), address: useRef(null) };
   const [fieldErr, setFieldErr] = useState('');
 
-  useEffect(() => { document.title = 'Book your install · Everwave Permanent Lighting'; }, []);
+  usePageMeta('/book');
   useEffect(() => {
-    if (params.get('taken')) { update({ step: 3, time: '' }); setParams({}, { replace: true }); }
+    if (params.get('taken')) { update({ step: 3, time: '' }); setParams({}, { replace: true }); return; }
+    // Service pages link here with ?type=Permanent|Seasonal to preselect the lighting type.
+    const t = params.get('type');
+    if (t && LIGHTING_TYPES.some((x) => x.id === t)) {
+      if (!draft.type || draft.step === 0) update((d) => ({ type: t, addons: t === 'Permanent' ? d.addons.filter((a) => a !== 'storage') : d.addons }));
+      setParams({}, { replace: true });
+    }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
   useEffect(() => { window.scrollTo(0, 0); }, [step]);
@@ -355,7 +362,7 @@ export default function Book() {
           </footer>
         </section>
 
-        <p className="bk__help">Questions? Call <a href={BUSINESS.phoneHref}>{BUSINESS.phoneDisplay}</a> · Prices are “starting at” and confirmed at your visit. <Link to="/">Back to site</Link></p>
+        <p className="bk__help">Questions? {hasPhone() ? <>Call <a href={BUSINESS.phoneHref}>{BUSINESS.phoneDisplay}</a></> : <Link to="/contact">Contact us</Link>} · Prices are “starting at” and confirmed at your visit. <Link to="/">Back to site</Link></p>
       </div>
     </main>
   );

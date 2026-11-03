@@ -3,17 +3,25 @@
 import { useCallback, useEffect, useLayoutEffect, useRef, useState } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import logo from '../assets/everwave-logo.png';
-import { BUSINESS } from '../data/business.js';
+import { BUSINESS, SERVICES, hasPhone, quoteLabel } from '../data/business.js';
 import { CloseIcon, LockIcon, MenuIcon, PhoneIcon, ArrowRight } from './Icons.jsx';
 
 export const NAV_LINKS = [
-  { id: 'how', label: 'How it works' },
-  { id: 'gallery', label: 'Gallery' },
-  { id: 'season', label: 'Season' },
-  { id: 'packages', label: 'Packages' },
-  { id: 'faq', label: 'FAQ' },
+  { to: '/services', label: 'Services' },
+  { to: '/process', label: 'Our process' },
+  { to: '/gallery', label: 'Gallery' },
+  { to: '/about', label: 'About' },
+  { to: '/faq', label: 'FAQ' },
+  { to: '/contact', label: 'Contact' },
 ];
-const DRAWER_LINKS = [{ id: 'area', label: 'Service area' }, ...NAV_LINKS];
+const DRAWER_LINKS = [
+  { to: '/services', label: 'Services' },
+  ...SERVICES.map((s) => ({ to: `/services/${s.slug}`, label: s.short, sub: true })),
+  ...NAV_LINKS.slice(1),
+  { to: '/quote', label: quoteLabel() },
+];
+/** Nav item that matches the current page (/services/… keeps "Services" active). */
+const activeFor = (pathname) => (NAV_LINKS.find((l) => pathname === l.to || pathname.startsWith(l.to + '/')) || {}).to || '';
 
 /** Scroll to a home-page section, navigating home first when needed. */
 export function useSectionNav() {
@@ -40,10 +48,9 @@ function WaveEdge({ className }) {
 
 export default function Nav({ focused = false }) {
   const { pathname } = useLocation();
-  const go = useSectionNav();
   const [scrolled, setScrolled] = useState(false);
   const [open, setOpen] = useState(false);
-  const [active, setActive] = useState('');
+  const active = focused ? '' : activeFor(pathname);
   const [hover, setHover] = useState('');
   const trackRef = useRef(null);
   const dotRef = useRef(null);
@@ -57,24 +64,13 @@ export default function Nav({ focused = false }) {
     return () => window.removeEventListener('scroll', on);
   }, []);
 
-  // Scroll spy for the active link (home only).
+  // Re-measure the sun-dot once web fonts have loaded (link widths change).
+  const [fontsReady, setFontsReady] = useState(false);
   useEffect(() => {
-    if (pathname !== '/' || focused) { setActive(''); return undefined; }
-    const ids = NAV_LINKS.map((l) => l.id);
-    const on = () => {
-      let cur = '';
-      for (const id of ids) {
-        const el = document.getElementById(id);
-        if (el && el.getBoundingClientRect().top < window.innerHeight * 0.35) cur = id;
-      }
-      setActive(cur);
-    };
-    on();
-    window.addEventListener('scroll', on, { passive: true });
-    return () => window.removeEventListener('scroll', on);
-  }, [pathname, focused]);
+    if (document.fonts && document.fonts.ready) document.fonts.ready.then(() => setFontsReady(true));
+  }, []);
 
-  // Sun-dot glides under the hovered link, else the active one.
+  // Sun-dot glides under the hovered link, else the current page's link.
   useLayoutEffect(() => {
     const track = trackRef.current;
     const dot = dotRef.current;
@@ -84,7 +80,7 @@ export default function Nav({ focused = false }) {
     if (!a) { dot.style.opacity = '0'; return; }
     dot.style.opacity = '1';
     dot.style.transform = `translateX(${a.offsetLeft + a.offsetWidth / 2 - 4}px)`;
-  }, [hover, active, scrolled]);
+  }, [hover, active, scrolled, fontsReady]);
 
   // Drawer: Esc closes, body scroll lock, focus management.
   useEffect(() => {
@@ -117,9 +113,13 @@ export default function Nav({ focused = false }) {
             <img src={logo} alt={BUSINESS.name} width="640" height="314" />
           </Link>
           <span className="hdr__secure"><LockIcon size={16} /> Secure booking</span>
-          <a className="hdr__phone" href={BUSINESS.phoneHref} aria-label={`Call ${BUSINESS.phoneDisplay}`}>
-            <PhoneIcon size={18} /><span>{BUSINESS.phoneDisplay}</span>
-          </a>
+          {hasPhone() ? (
+            <a className="hdr__phone" href={BUSINESS.phoneHref} aria-label={`Call ${BUSINESS.phoneDisplay}`}>
+              <PhoneIcon size={18} /><span>{BUSINESS.phoneDisplay}</span>
+            </a>
+          ) : (
+            <Link className="hdr__phone" to="/contact"><span>Need help?</span></Link>
+          )}
         </div>
         <WaveEdge className="hdr__wave" />
       </header>
@@ -136,19 +136,18 @@ export default function Nav({ focused = false }) {
         <nav className="hdr__nav" aria-label="Main">
           <ul className="track" ref={trackRef} onMouseLeave={() => setHover('')}>
             {NAV_LINKS.map((l) => (
-              <li key={l.id}>
-                <a
-                  href={`/#${l.id}`}
-                  data-id={l.id}
-                  className={active === l.id ? 'is-active' : ''}
-                  aria-current={active === l.id ? 'true' : undefined}
-                  onMouseEnter={() => setHover(l.id)}
-                  onFocus={() => setHover(l.id)}
+              <li key={l.to}>
+                <Link
+                  to={l.to}
+                  data-id={l.to}
+                  className={active === l.to ? 'is-active' : ''}
+                  aria-current={pathname === l.to ? 'page' : undefined}
+                  onMouseEnter={() => setHover(l.to)}
+                  onFocus={() => setHover(l.to)}
                   onBlur={() => setHover('')}
-                  onClick={(e) => { e.preventDefault(); go(l.id); }}
                 >
                   {l.label}
-                </a>
+                </Link>
               </li>
             ))}
             <span className="track__dot" ref={dotRef} aria-hidden="true" />
@@ -156,9 +155,11 @@ export default function Nav({ focused = false }) {
         </nav>
 
         <div className="hdr__actions">
-          <a className="hdr__call" href={BUSINESS.phoneHref} aria-label={`Call ${BUSINESS.phoneDisplay}`}>
-            <PhoneIcon size={18} />
-          </a>
+          {hasPhone() && (
+            <a className="hdr__call" href={BUSINESS.phoneHref} aria-label={`Call ${BUSINESS.phoneDisplay}`}>
+              <PhoneIcon size={18} />
+            </a>
+          )}
           <Link to="/book" className="btn btn--sun hdr__book">Book Online</Link>
           <button
             ref={burgerRef}
@@ -187,16 +188,18 @@ export default function Nav({ focused = false }) {
           </div>
           <ul className="drawer__links">
             {DRAWER_LINKS.map((l, i) => (
-              <li key={l.id} style={{ '--i': i }}>
-                <a href={`/#${l.id}`} tabIndex={open ? 0 : -1} onClick={(e) => { e.preventDefault(); setOpen(false); setTimeout(() => go(l.id), 60); }}>
-                  {l.label}<ArrowRight size={18} />
-                </a>
+              <li key={l.to} style={{ '--i': i }} className={l.sub ? 'is-sub' : ''}>
+                <Link to={l.to} tabIndex={open ? 0 : -1} aria-current={pathname === l.to ? 'page' : undefined} onClick={() => setOpen(false)}>
+                  {l.label}<ArrowRight size={l.sub ? 16 : 18} />
+                </Link>
               </li>
             ))}
           </ul>
           <p className="drawer__meta">Serving {BUSINESS.city} &amp; nearby coastal Orange County</p>
           <div className="drawer__actions">
-            <a className="btn btn--ghost-dark" href={BUSINESS.phoneHref} tabIndex={open ? 0 : -1}><PhoneIcon size={18} /> Call Now</a>
+            {hasPhone()
+              ? <a className="btn btn--ghost-dark" href={BUSINESS.phoneHref} tabIndex={open ? 0 : -1}><PhoneIcon size={18} /> Call Now</a>
+              : <Link className="btn btn--ghost-dark" to="/quote" tabIndex={open ? 0 : -1}>{quoteLabel()}</Link>}
             <Link className="btn btn--sun" to="/book" tabIndex={open ? 0 : -1}>Book Online</Link>
           </div>
           </div>

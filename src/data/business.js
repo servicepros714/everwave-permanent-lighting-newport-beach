@@ -4,17 +4,107 @@
    ratings, licenses or stats here.
    ───────────────────────────────────────────────────────────── */
 
+/* ═════════════════════════════════════════════════════════════
+   BUSINESS DETAILS — the single source of truth for the website,
+   the structured data (JSON-LD), the sitemap and the legal pages.
+
+   ⚠ OWNER TO CONFIRM: every field marked "PLACEHOLDER" below.
+   Empty values ('' / null / []) are HIDDEN on the site — nothing
+   fake is ever shown. Fill a value in and it appears everywhere
+   it is used (header, footer, contact page, schema, legal pages).
+   ═════════════════════════════════════════════════════════════ */
 export const BUSINESS = {
+  /* Must match the name on your Google Business Profile exactly. */
   name: 'Everwave Permanent Lighting',
   shortName: 'Everwave',
+  // PLACEHOLDER — registered legal entity (e.g. "Everwave Lighting LLC"). Used on the legal pages when set.
+  legalName: '',
   city: 'Newport Beach',
   region: 'CA',
-  // TODO: placeholder — the number provided (555-555-555) has only 9 digits. Replace display + tel: link.
-  phoneDisplay: '(555) 555-5555',
-  phoneHref: 'tel:+15555555555',
-  // TODO: add the Google Business Profile review link once the profile is live.
+  regionName: 'California',
+  country: 'US',
+  description:
+    'Permanent LED roofline lighting and professional Christmas light installation for homes in Newport Beach and nearby Orange County cities.',
+
+  // PLACEHOLDER — the number provided (555-555-555) had only 9 digits, so no phone is shown.
+  // Fill in all three, e.g. phone: '+19495550123', phoneDisplay: '(949) 555-0123', phoneHref: 'tel:+19495550123'.
+  phone: '',
+  phoneDisplay: '',
+  phoneHref: '',
+
+  // PLACEHOLDER — business email. Turns on the contact + quote request forms (they open the visitor's email app).
+  email: '',
+
+  // PLACEHOLDER — only if you want a public street address (service-area businesses usually hide it).
+  // Shape: { street: '', city: 'Newport Beach', region: 'CA', postalCode: '' }
+  address: null,
+
+  // PLACEHOLDER — business hours, only once confirmed. Shape: [{ days: 'Mon–Fri', hours: '8 AM – 5 PM' }]
+  // (Install windows during the season are already shown separately.)
+  hours: [],
+
+  // PLACEHOLDER — real social profile URLs only, e.g. ['https://www.instagram.com/…'].
+  social: [],
+
+  // PLACEHOLDER — Google Business Profile review link once the profile is live.
   googleReviewUrl: '',
+
+  // PLACEHOLDER — Google Search Console "HTML tag" verification code (just the content="…" value).
+  googleSiteVerification: '',
+
+  // OWNER TO CONFIRM — set to true only if quotes / design visits are always free of charge.
+  // While false, the site says "Get a Quote" instead of "Get a Free Quote".
+  freeQuote: false,
+
+  /* Live site address, no trailing slash. Update when the custom domain is connected
+     (canonical URLs, Open Graph, sitemap and schema all follow this value). */
+  siteUrl: 'https://everwave-permanent-lighting-newport-beach.netlify.app',
 };
+
+/* About page — optional owner-supplied content. Empty = section hidden. */
+export const ABOUT = {
+  // PLACEHOLDER — the real story: who runs Everwave, how long you've done this work, why you started.
+  story: [],
+  // PLACEHOLDER — year founded, e.g. 2025. Shown only when set.
+  founded: null,
+  // PLACEHOLDER — only verified items, e.g. 'Licensed (CSLB #…)', 'Insured — general liability'. Never guess.
+  credentials: [],
+};
+
+/* Policies used by the Terms page. Empty = the page says the policy is provided before you pay,
+   instead of inventing one. PLACEHOLDER — fill in your real policies. */
+export const POLICIES = {
+  lastUpdated: 'November 4, 2026',
+  cancellation: '', // e.g. 'Cancel or reschedule free of charge up to 48 hours before your window…'
+  depositRefund: '', // e.g. 'The $149 deposit is refundable if you cancel at least …'
+  warranty: '', // e.g. 'We warranty our installation workmanship for …'
+  paymentTerms: '', // e.g. 'The balance is due on the day of installation by card or …'
+  governingLaw: 'the State of California', // OWNER TO CONFIRM with your attorney
+};
+
+/* Helpers — what contact options are actually available. */
+export const hasPhone = () => !!BUSINESS.phoneHref;
+export const hasEmail = () => !!BUSINESS.email;
+export const quoteLabel = () => (BUSINESS.freeQuote ? 'Get a Free Quote' : 'Get a Quote');
+/** Plain-text "how to reach us" for messages, e.g. "call (949) 555-0123". */
+export const contactPhrase = () =>
+  BUSINESS.phoneDisplay ? `call ${BUSINESS.phoneDisplay}` : BUSINESS.email ? `email ${BUSINESS.email}` : 'contact us through our Contact page';
+
+/** Lists every owner-supplied detail that is still missing (logged in dev, reported at build). */
+export function missingDetails() {
+  const out = [];
+  if (!BUSINESS.phone) out.push('BUSINESS.phone / phoneDisplay / phoneHref');
+  if (!BUSINESS.email) out.push('BUSINESS.email (contact + quote forms are off without it)');
+  if (!BUSINESS.legalName) out.push('BUSINESS.legalName');
+  if (!BUSINESS.googleReviewUrl) out.push('BUSINESS.googleReviewUrl');
+  if (!BUSINESS.googleSiteVerification) out.push('BUSINESS.googleSiteVerification');
+  if (!ABOUT.story.length) out.push('ABOUT.story');
+  if (!POLICIES.cancellation) out.push('POLICIES.cancellation');
+  if (!POLICIES.depositRefund) out.push('POLICIES.depositRefund');
+  if (!POLICIES.paymentTerms) out.push('POLICIES.paymentTerms');
+  if (PACKAGES.every((p) => p.price.Seasonal == null)) out.push('PACKAGES prices (all show "Online quoting")');
+  return out;
+}
 
 /* Plumbing — must stay unique per site (see the layout registry). */
 export const SOURCE_TAG = 'everwave-newportbeach';
@@ -46,6 +136,43 @@ export const LIGHTING_TYPES = [
     name: 'Seasonal Christmas lights',
     tag: 'Leased · installed · taken down',
     blurb: 'Commercial-grade LED holiday lights we design, hang, maintain and take down after the holidays.',
+  },
+];
+
+/* Service pages (/services/…). Copy is drawn only from details already confirmed on this site. */
+export const SERVICES = [
+  {
+    slug: 'permanent-lighting',
+    type: 'Permanent',
+    name: 'Permanent Roofline Lighting',
+    short: 'Permanent lighting',
+    tagline: 'Installed once. Ready for every holiday.',
+    summary: 'Low-profile LED lighting mounted along your roofline once and left in place — no yearly install, no takedown, no ladders.',
+    points: [
+      'Low-profile LED lighting mounted along the roofline and left in place',
+      'No yearly install or takedown — the lights stay up for next year',
+      'Runs from a controller; we show you how to use it on install day',
+      'Front Only or Front & Sides coverage, for 1-story and 2-story homes',
+      'Price quoted online and confirmed with you at the visit',
+    ],
+    faqTopics: ['Power', 'Lights', 'Pricing'],
+  },
+  {
+    slug: 'christmas-lights',
+    type: 'Seasonal',
+    name: 'Christmas Light Installation',
+    short: 'Christmas lights',
+    tagline: 'Designed, hung, maintained and taken down.',
+    summary: 'Commercial-grade LED holiday lights we design, hang, maintain and take down after the holidays — leased, so there is nothing to buy or store.',
+    points: [
+      'Leased commercial-grade LED lights — nothing to buy or store',
+      'Custom design for the front, or the front and sides, of your home',
+      'Roofline and gutter-line installation with timer setup',
+      'In-season maintenance and bulb replacement',
+      'Takedown after the holidays',
+      'Add-ons: tree & bush wrapping, wreaths & garland, pathway lights, or hanging lights you already own',
+    ],
+    faqTopics: ['Schedule', 'Lights', 'Weather'],
   },
 ];
 
@@ -138,9 +265,29 @@ export const GALLERY = [
   { id: 'g6', scene: { house: 'cottage', lights: 'gold', bushes: true, path: true }, title: 'Gold permanent accent lighting', tag: 'Permanent' },
 ];
 
-export const FAQ_TOPICS = ['All', 'Power', 'Lights', 'Schedule', 'Weather'];
+export const FAQ_TOPICS = ['All', 'Pricing', 'Power', 'Lights', 'Schedule', 'Weather'];
 
 export const FAQS = [
+  {
+    topic: 'Pricing',
+    q: 'How is my price worked out?',
+    a: 'Your price depends on the package (Front Only or Front & Sides), the height of your home and any add-ons. The booking form shows an estimate as you go. At the visit we walk your roofline and confirm the design and final price with you before anything is installed.',
+  },
+  {
+    topic: 'Pricing',
+    q: 'Do I have to pay online?',
+    a: 'No. You can reserve your install window with a $149 deposit, which is applied to your final invoice, or choose “I’ll pay at the visit” at checkout and pay nothing today.',
+  },
+  {
+    topic: 'Pricing',
+    q: 'Is paying online secure?',
+    a: 'Card payments are processed by Stripe. Your card details go straight to Stripe and are never stored on our website or our booking system.',
+  },
+  {
+    topic: 'Schedule',
+    q: 'Do you serve my city?',
+    a: 'We are based in Newport Beach and install along the coast and in nearby inland cities, including Huntington Beach, Costa Mesa, Irvine, Laguna Beach, Fountain Valley, Santa Ana and Tustin. If your city isn’t listed, contact us and we’ll tell you if your street is on our route.',
+  },
   {
     topic: 'Power',
     q: 'Do I need outdoor outlets?',

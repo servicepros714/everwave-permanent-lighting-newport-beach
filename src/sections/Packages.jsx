@@ -1,7 +1,7 @@
 /* Packages as boarding-pass tickets (perforated stub with Seasonal / Permanent price rows),
    add-ons as a dotted-leader price menu, and one Book Now button. */
 import { Link } from 'react-router-dom';
-import { ADDONS, PACKAGES, PERMANENT_NOTES, STORY_OPTIONS } from '../data/business.js';
+import { ADDONS, PACKAGES, PERMANENT_NOTES, SERVICES, STORY_OPTIONS } from '../data/business.js';
 import { addonLabel, priceLabel } from '../lib/pricing.js';
 import { riseDelay } from '../lib/useReveal.js';
 import { ArrowRight, CheckIcon, SunMark } from '../components/Icons.jsx';
@@ -82,6 +82,9 @@ export default function Packages() {
         <div className="pk__cta" data-rise>
           <Link to="/book" className="btn btn--sun btn--lg">Book Now <ArrowRight size={18} /></Link>
         </div>
+        <p className="pk__links" data-rise>
+          Learn more: {SERVICES.map((s, i) => <span key={s.slug}>{i > 0 && ' · '}<Link to={`/services/${s.slug}`}>{s.name}</Link></span>)}
+        </p>
       </div>
     </section>
   );

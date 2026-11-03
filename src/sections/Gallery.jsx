@@ -1,10 +1,11 @@
 /* Gallery — main stage with crossfade + thumbnail rail (vertical on desktop, swipe strip on phones). */
 import { useRef, useState } from 'react';
+import { Link } from 'react-router-dom';
 import NightScene from '../components/NightScene.jsx';
 import { GALLERY } from '../data/business.js';
 import { ChevronLeft, ChevronRight } from '../components/Icons.jsx';
 
-export default function Gallery() {
+export default function Gallery({ more = false }) {
   const [idx, setIdx] = useState(0);
   const railRef = useRef(null);
   const n = GALLERY.length;
@@ -28,7 +29,10 @@ export default function Gallery() {
             <p className="eyebrow eyebrow--light">Gallery</p>
             <h2 className="h2 h2--light">After dark, every <span className="grad-text">wave of light</span>.</h2>
           </div>
-          <p className="gal__note">Illustrated design previews — real install photos are coming soon.</p>
+          <p className="gal__note">
+            Illustrated design previews — real install photos are coming soon.
+            {more && <> <Link to="/gallery">Open the gallery</Link></>}
+          </p>
         </div>
 
         <div className="gal__wrap" data-rise style={{ '--rise-delay': '120ms' }}>

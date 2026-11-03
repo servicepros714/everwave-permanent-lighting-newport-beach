@@ -1,4 +1,5 @@
 /* Service area as a coastline map with pinned cities (Coast / Inland lists on phones). */
+import { Link } from 'react-router-dom';
 import { BUSINESS, SERVICE_AREA } from '../data/business.js';
 import { riseDelay } from '../lib/useReveal.js';
 import { PinIcon, SunMark } from '../components/Icons.jsx';
@@ -28,7 +29,7 @@ export default function ServiceArea() {
           </div>
           <p className="area__lead" data-rise style={riseDelay(1)}>
             Based in {BUSINESS.city}, our crew installs along the coast and in the nearby inland cities.
-            Don’t see your city? Call us — we’ll tell you if your street is on our route.
+            Don’t see your city? <Link to="/contact">Get in touch</Link> — we’ll tell you if your street is on our route.
           </p>
         </div>
 

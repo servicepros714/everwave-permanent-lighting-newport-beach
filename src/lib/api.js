@@ -9,7 +9,7 @@ async function call(path, opts = {}) {
       headers: { 'Content-Type': 'application/json', ...(opts.headers || {}) },
     });
   } catch {
-    throw Object.assign(new Error('We could not reach our booking system. Check your connection or call us.'), { status: 0 });
+    throw Object.assign(new Error('We could not reach our booking system. Check your connection and try again, or contact us.'), { status: 0 });
   }
   const data = await res.json().catch(() => ({}));
   if (!res.ok) throw Object.assign(new Error(data.error || 'Something went wrong.'), { status: res.status, code: data.code });

@@ -1,0 +1,20 @@
+# Netlify — build + hosting config.
+# The build writes one HTML file per route (about.html, services/permanent-lighting.html, …),
+# which Netlify serves at clean URLs (/about). Any other path falls back to the app (status 200);
+# because this rule is not forced, real files always win over it.
+[build]
+  command = "npm run build"
+  publish = "dist"
+
+[build.environment]
+  NODE_VERSION = "20"
+
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200
+
+[[headers]]
+  for = "/assets/*"
+  [headers.values]
+    Cache-Control = "public, max-age=31536000, immutable"

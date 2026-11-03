@@ -76,7 +76,7 @@ export default function Hero() {
           {status !== 'loading' && next && (
             <span>{status === 'live' ? 'Next open install' : 'Earliest install date'}: <b>{fmtDate(next.date)}</b> · {next.window.part}</span>
           )}
-          {status !== 'loading' && !next && <span>This season is full — call us for next year.</span>}
+          {status !== 'loading' && !next && <span>This season is full — contact us about next year.</span>}
         </div>
         <ul className="hero__facts" data-rise style={{ '--rise-delay': '640ms' }}>
           <li>Permanent or seasonal</li>

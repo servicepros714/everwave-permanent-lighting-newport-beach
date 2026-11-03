@@ -300,7 +300,7 @@
 .tidechart__col.is-past .tidechart__fill::before, .tidechart__col.is-full .tidechart__fill::before { display: none; }
 .tidechart__col.is-past .tidechart__val, .tidechart__col.is-past .tidechart__wk { color: #6F86AB; }
 .tidechart__wk { font: 600 12px/1.15 var(--f-display); color: #B9CEE8; text-align: center; }
-.tidechart__now { position: absolute; top: -26px; white-space: nowrap; padding: 3px 8px; border-radius: 999px; background: var(--grad-sun); color: var(--abyss); font: 800 10px var(--f-display); letter-spacing: 0.08em; text-transform: uppercase; }
+.tidechart__now { position: absolute; top: -26px; white-space: nowrap; padding: 3px 8px; border-radius: 999px; background: var(--grad-sun); color: var(--abyss); font: 800 11px var(--f-display); letter-spacing: 0.08em; text-transform: uppercase; }
 .tidechart__col.is-now .tidechart__track { box-shadow: 0 0 0 2px var(--gold); }
 .tidechart__legend { display: flex; flex-wrap: wrap; gap: 8px 18px; margin-top: 18px; padding-top: 14px; border-top: 1px solid rgba(255, 255, 255, 0.1); font-size: 13px; color: #B9CEE8; }
 .tidechart__legend span { display: inline-flex; align-items: center; gap: 7px; }
@@ -316,7 +316,7 @@
   .tidechart__bars { gap: 5px; }
   .tidechart__track { height: 160px; border-radius: 10px; }
   .tidechart__val { font-size: 12px; }
-  .tidechart__wk { font-size: 10px; }
+  .tidechart__wk { font-size: 11px; }
   .tidechart__now { font-size: 8.5px; padding: 2px 5px; letter-spacing: 0.04em; }
 }
 
@@ -414,7 +414,7 @@
 .acc__item { margin-bottom: 10px; border-radius: 20px; background: #fff; border: 1px solid var(--line); transition: box-shadow 0.25s; }
 .acc__item.is-open { box-shadow: 0 24px 44px -32px rgba(1, 11, 59, 0.55); border-color: #BFD8EC; }
 .acc__q { width: 100%; display: grid; grid-template-columns: auto minmax(0, 1fr) auto; align-items: center; gap: 14px; padding: 18px 20px; border: 0; background: none; text-align: left; }
-.acc__topic { padding: 4px 9px; border-radius: 999px; background: var(--mist); color: var(--royal); font: 700 10.5px var(--f-display); letter-spacing: 0.12em; text-transform: uppercase; }
+.acc__topic { padding: 4px 9px; border-radius: 999px; background: var(--mist); color: var(--royal); font: 700 11px var(--f-display); letter-spacing: 0.12em; text-transform: uppercase; }
 .acc__text { font: 700 17px/1.35 var(--f-display); letter-spacing: -0.01em; color: var(--abyss); }
 .acc__icon { position: relative; width: 30px; height: 30px; border-radius: 50%; background: var(--mist); transition: background 0.25s; }
 .acc__icon::before, .acc__icon::after { content: ''; position: absolute; left: 50%; top: 50%; width: 12px; height: 2.5px; margin: -1.25px 0 0 -6px; border-radius: 2px; background: var(--navy); transition: transform 0.3s var(--ease); }
